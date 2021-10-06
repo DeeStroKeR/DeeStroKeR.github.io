@@ -3,10 +3,11 @@ import { useHistory } from "react-router";
 import { Context, ADD_LIST_ITEMS, CLEAR_LIST_ITEMS, SET_LIST_NUMBER, SET_PAGE_NUMBER, SET_FILTER } from './App';
 import moment from 'moment';
 
-const HelloWorld = () => {
+const Table = () => {
     const [hasMore, setHasMore] = useState(true);
     const [isLoading, setIsloading] = useState(true);
     const [error, setError] = useState('');
+    const [isMenuOpen, setIsMenuOpen] = useState(false);
     const history = useHistory();
     const context = useContext(Context);
     const { items, listNumber, pageNumber, filter, comments } = context.state
@@ -117,6 +118,14 @@ const HelloWorld = () => {
         }
     }
 
+    const setMobileFilter = (direction) => {
+        context.dispatch({
+            type: SET_FILTER,
+            payload: {columnName: 'time_ago', dir: direction}
+        })
+        setIsMenuOpen(false);
+    }
+
     if (filter.columnName) {
         const columnName = filter.columnName;
         if (filter.dir === 'ASC') {
@@ -185,8 +194,19 @@ const HelloWorld = () => {
             {error && <div className="information">{error}</div>}
             {!hasMore && <div className="information">No more data</div>}
             <button className="to-top-button" onClick={() => window.scrollTo({top: 0, left: 0, behavior: 'smooth' })}>To Top</button>
+            <button className="to-top-button float-button" onClick={() => setIsMenuOpen(!isMenuOpen)}>sort</button>
+            <div className={isMenuOpen ? "float-menu float-menu-open" : "float-menu"}>
+                <div className={filter.columnName === "time_ago" && filter.dir === "ASC" ? "float-menu-item float-menu-item-active" : "float-menu-item"}
+                    onClick={() => setMobileFilter("ASC")}>
+                    Ascending
+                </div>
+                <div className={filter.columnName === "time_ago" && filter.dir === "DSC" ? "float-menu-item float-menu-item-active" : "float-menu-item"}
+                    onClick={() => setMobileFilter("DSC")}>
+                    Descending
+                </div>
+            </div>
         </div>
     )
 };
 
-export default HelloWorld;
+export default Table;
